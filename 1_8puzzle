@@ -1,0 +1,75 @@
+from collections import deque
+
+GOAL_STATE = [
+    [1, 2, 3],
+    [4, 5, 6],
+    [7, 8, 0]
+]
+
+def find_blank(state):
+    for i in range(3):
+        for j in range(3):
+            if state[i][j] == 0:
+                return i, j
+
+def print_state(state):
+    for row in state:
+        print(" ".join(map(str, row)))
+    print()
+
+def get_neighbors(state):
+    neighbors = []
+    r, c = find_blank(state)
+    
+    moves = [(-1, 0), (1, 0), (0, -1), (0, 1)]
+    
+    for dr, dc in moves:
+        nr, nc = r + dr, c + dc
+        if 0 <= nr < 3 and 0 <= nc < 3:
+          
+            new_state = [row[:] for row in state]
+            
+            new_state[r][c], new_state[nr][nc] = new_state[nr][nc], new_state[r][c]
+            neighbors.append(new_state)
+            
+    return neighbors
+
+# Breadth-First Search Implementation
+def bfs(start_state):
+    # Queue stores tuples of (current_state, path_taken_to_get_here)
+    queue = deque([(start_state, [start_state])])
+    # Convert list to tuple of tuples so it can be added to a set for fast lookup
+    visited = {tuple(tuple(row) for row in start_state)}
+    
+    while queue:
+        current_state, path = queue.popleft()
+        
+        if current_state == GOAL_STATE:
+            return path
+            
+        for neighbor in get_neighbors(current_state):
+            neighbor_tuple = tuple(tuple(row) for row in neighbor)
+            if neighbor_tuple not in visited:
+                visited.add(neighbor_tuple)
+                queue.append((neighbor, path + [neighbor]))
+                
+    return None
+
+
+
+# FIXED: Wrapped properly as a 3x3 2D list
+start_state = [[1, 2, 3], [4, 0, 6], [7, 5, 8]]
+
+print("Initial state:")
+print_state(start_state)
+
+solution = bfs(start_state)
+
+if solution:
+    print("Solution found!")
+    print("Number of moves =", len(solution) - 1)
+    for i, state in enumerate(solution):
+        print(f"Step {i}:")
+        print_state(state)
+else:
+    print("No solution exists.")
