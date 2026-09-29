@@ -1,0 +1,85 @@
+# Experiment-6: Airline Scheduling Problem
+# Using Constraint Satisfaction Problem (CSP)
+
+flights = ["F1", "F2", "F3", "F4"]
+
+aircraft = ["A1", "A2"]
+
+time_slots = ["09:00", "10:00", "11:00", "12:00"]
+
+# Crew available for each flight
+crew = {
+    "F1": "C1",
+    "F2": "C2",
+    "F3": "C1",
+    "F4": "C2"
+}
+
+# Aircraft maintenance schedules
+maintenance = {
+    "A1": ["11:00"],
+    "A2": ["10:00"]
+}
+
+# Store the final schedule
+schedule = {}
+
+def is_valid(flight, plane, time):
+    # Check aircraft maintenance
+    if time in maintenance[plane]:
+        return False
+
+    # Check if aircraft is already assigned at this time
+    for f, details in schedule.items():
+        if details["aircraft"] == plane and details["time"] == time:
+            return False
+
+    # Check crew availability
+    for f, details in schedule.items():
+        if crew[f] == crew[flight] and details["time"] == time:
+            return False
+
+    return True
+
+
+def schedule_flights(index):
+    # All flights are scheduled
+    if index == len(flights):
+        return True
+
+    flight = flights[index]
+
+    for plane in aircraft:
+        for time in time_slots:
+
+            if is_valid(flight, plane, time):
+                # Assign flight
+                schedule[flight] = {
+                    "aircraft": plane,
+                    "time": time,
+                    "crew": crew[flight]
+                }
+
+                # Schedule the next flight
+                if schedule_flights(index + 1):
+                    return True
+
+                # Backtrack if assignment fails
+                del schedule[flight]
+
+    return False
+
+if schedule_flights(0):
+    print("Final Flight Schedule:")
+    print("-----------------------")
+
+    for flight in flights:
+        details = schedule[flight]
+        print(
+            flight,
+            "-> Aircraft:", details["aircraft"],
+            ", Time:", details["time"],
+            ", Crew:", details["crew"]
+        )
+else:
+    print("No feasible schedule found.")
