@@ -1,0 +1,17 @@
+facts = ["Bird is an animal", "Sparrow is a bird"]
+print("Known Facts:")
+for fact in facts:
+    print(fact)
+if "Sparrow is a bird" in facts:
+    new_fact = "Sparrow can fly"
+    facts.append(new_fact)
+if "Bird is an animal" in facts:
+    new_fact = "Bird needs food"
+    facts.append(new_fact)
+print("\nDerived Facts:")
+print("Sparrow can fly")
+print("Bird needs food")
+
+print("\nAll Facts:")
+for fact in facts:
+    print(fact)
